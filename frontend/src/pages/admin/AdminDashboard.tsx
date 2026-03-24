@@ -1,0 +1,179 @@
+import { useEffect, useState } from "react";
+import API from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import AdminSidebar from "../../components/AdminSidebar";
+import StatsCard from "../../components/StatsCard";
+
+export default function AdminDashboard() {
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [filter, setFilter] = useState("all");
+  const [view, setView] = useState("tasks"); // 🔥 NEW (toggle)
+  const navigate = useNavigate();
+
+  const fetchTasks = async () => {
+    const res = await API.get("/tasks/");
+    setTasks(res.data);
+  };
+
+  const fetchContacts = async () => {
+    const res = await API.get("/contact/");
+    setContacts(res.data);
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchContacts();
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  // 🔥 FILTER
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "paid") return task.payment_status === "Verified";
+    if (filter === "pending") return task.status === "Pending";
+    if (filter === "urgent") return task.priority === "Urgent";
+    return true;
+  });
+
+  // 🔥 ANALYTICS
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.status === "Completed").length;
+  const pending = tasks.filter(t => t.status === "Pending").length;
+  const revenue = tasks.filter(t => t.payment_status === "Verified").length;
+
+  const verifyPayment = async (id: string) => {
+    await API.put(`/tasks/verify-payment/${id}`);
+    fetchTasks();
+  };
+
+  const updateStatus = async (id: string, status: string) => {
+    await API.put(`/tasks/${id}`, { status });
+    fetchTasks();
+  };
+
+  return (
+    <div className="flex bg-gray-100 min-h-screen">
+
+      <AdminSidebar setFilter={setFilter} logout={logout} />
+
+      <div className="w-full md:ml-64 p-4 md:p-6">
+
+        {/* 🔥 SWITCH BUTTON */}
+        <div className="flex gap-3 mb-6">
+          <button
+            onClick={() => setView("tasks")}
+            className={`px-4 py-2 rounded-lg ${
+              view === "tasks" ? "bg-blue-600 text-white" : "bg-gray-200"
+            }`}
+          >
+            📋 Tasks
+          </button>
+
+          <button
+            onClick={() => setView("contacts")}
+            className={`px-4 py-2 rounded-lg ${
+              view === "contacts" ? "bg-purple-600 text-white" : "bg-gray-200"
+            }`}
+          >
+            📩 Contact Messages
+          </button>
+        </div>
+
+        {/* ================= TASK VIEW ================= */}
+        {view === "tasks" && (
+          <>
+            {/* STATS */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <StatsCard title="Total Tasks" value={total} color="bg-blue-500" />
+              <StatsCard title="Completed" value={completed} color="bg-green-500" />
+              <StatsCard title="Pending" value={pending} color="bg-yellow-500" />
+              <StatsCard title="Revenue" value={`₹${revenue * 200}`} color="bg-purple-500" />
+            </div>
+
+            {/* TASK LIST */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTasks.map((task) => (
+                <div key={task.id} className="bg-white p-5 rounded-xl shadow">
+
+                  <h2 className="font-bold">{task.service_type}</h2>
+                  <p>{task.name}</p>
+
+                  <p className="text-sm">📧 {task.email}</p>
+                  <p className="text-sm">📱 {task.phone}</p>
+
+                  <p className="text-sm mt-2">{task.description}</p>
+
+                  <div className="mt-3 flex gap-2 flex-wrap">
+                    <span className="px-2 py-1 bg-gray-200 rounded text-xs">{task.status}</span>
+                    <span className="px-2 py-1 bg-green-200 text-xs">{task.payment_status}</span>
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-2">
+                    <button
+                      onClick={() => verifyPayment(task.id)}
+                      className="bg-green-600 text-white py-1 rounded"
+                    >
+                      Verify Payment
+                    </button>
+
+                    <div className="flex flex-wrap gap-2 mt-3">
+
+                      <button
+                        onClick={() => updateStatus(task.id, "In Progress")}
+                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                      >
+                        🚀 Start
+                      </button>
+
+                      <button
+                        onClick={() => updateStatus(task.id, "Completed")}
+                        className="bg-purple-500 text-white px-3 py-1 rounded"
+                      >
+                        ✅ Complete
+                      </button>
+
+                      <button
+                        onClick={() => updateStatus(task.id, "Delivered")}
+                        className="bg-black text-white px-3 py-1 rounded"
+                      >
+                        📦 Deliver
+                      </button>
+
+                    </div>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ================= CONTACT VIEW ================= */}
+        {view === "contacts" && (
+          <div className="grid gap-4">
+
+            {contacts.length === 0 ? (
+              <p className="text-gray-500 text-center mt-20">
+                No messages yet 👀
+              </p>
+            ) : (
+              contacts.map((c) => (
+                <div key={c.id} className="bg-white p-5 rounded-xl shadow">
+                  <h2 className="font-semibold">👤 {c.name}</h2>
+                  <p className="text-blue-600 text-sm">📧 {c.email}</p>
+                  <p className="mt-2">{c.message}</p>
+                </div>
+              ))
+            )}
+
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
