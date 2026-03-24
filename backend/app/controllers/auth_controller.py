@@ -15,7 +15,7 @@ async def register_user(data, db: Session):
     user = User(
         name=data.name,
         email=data.email,
-        password=hash_password(data.password),
+        password=data.password,
         role=data.role
     )
 
