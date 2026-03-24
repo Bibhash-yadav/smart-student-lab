@@ -4,17 +4,28 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Register() {
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const [role, setRole] = useState("student");
-  const [adminSecret, setAdminSecret] = useState(""); // 🔥 NEW
+  const [adminSecret, setAdminSecret] = useState("");
 
   const navigate = useNavigate();
 
-  const ADMIN_SECRET = "m@ster@dmin@1432"; // 🔐 SAME AS LOGIN
+  const ADMIN_SECRET = "m@ster@dmin@1432";
 
   const handleRegister = async () => {
     try {
-      // 🔥 BLOCK FAKE ADMIN
+      // 🔥 VALIDATION
+      if (!form.name || !form.email || !form.password) {
+        alert("All fields are required ❌");
+        return;
+      }
+
+      // 🔥 ADMIN CHECK
       if (role === "admin") {
         if (!adminSecret || adminSecret !== ADMIN_SECRET) {
           alert("Invalid Admin Secret ❌");
@@ -22,21 +33,31 @@ export default function Register() {
         }
       }
 
-      const res = await API.post("/auth/register", {
-        ...form,
-        role,
-      });
+      // ✅ CORRECT PAYLOAD
+      const payload = {
+        name: form.name,
+        email: form.email,
+        password: form.password, // ✅ FIXED
+        role: role,
+        adminSecret: adminSecret, // 🔥 send to backend
+      };
 
-      if (res.data.error) {
-        alert(res.data.error);
-        return;
-      }
+      console.log("SENDING:", payload);
+
+      const res = await API.post("/auth/register", payload);
+
+      console.log("RESPONSE:", res.data);
 
       alert("Account created successfully ✅");
       navigate("/login");
 
-    } catch {
-      alert("Registration failed ❌");
+    } catch (err: any) {
+      console.log("REGISTER ERROR:", err.response?.data || err);
+
+      alert(
+        err.response?.data?.detail ||
+        "Registration failed ❌"
+      );
     }
   };
 
@@ -47,7 +68,6 @@ export default function Register() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
 
-          {/* HEADER */}
           <div className="text-center mb-6">
             <div className="text-4xl mb-2">🎓</div>
             <h2 className="text-2xl font-bold">Create Account</h2>
@@ -60,14 +80,20 @@ export default function Register() {
           <input
             className="input"
             placeholder="👤 Full Name"
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.name}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
           />
 
           {/* EMAIL */}
           <input
             className="input"
             placeholder="📧 Email"
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={form.email}
+            onChange={(e) =>
+              setForm({ ...form, email: e.target.value })
+            }
           />
 
           {/* PASSWORD */}
@@ -75,7 +101,10 @@ export default function Register() {
             type="password"
             className="input"
             placeholder="🔒 Password"
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            value={form.password}
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
           />
 
           {/* ROLE */}
@@ -103,7 +132,7 @@ export default function Register() {
             </button>
           </div>
 
-          {/* 🔥 ADMIN SECRET FIELD */}
+          {/* ADMIN SECRET */}
           {role === "admin" && (
             <input
               type="password"
