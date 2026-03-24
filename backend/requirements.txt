@@ -2,10 +2,10 @@ fastapi
 uvicorn
 pymongo
 python-dotenv
-pydantic
-passlib[bcrypt]
+pydantic[email]
 python-multipart
 python-jose
 passlib[bcrypt]
 sqlalchemy
 psycopg2-binary
+email-validator
