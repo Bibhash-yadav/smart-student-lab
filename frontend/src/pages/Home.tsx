@@ -126,9 +126,9 @@ export default function Home() {
 
           {/* LEFT */}
           <div className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
-            <div className="flex gap-4"><span>📧</span><div><p>Email</p><p className="text-gray-500">smartstudentlab@gmail.com</p></div></div>
-            <div className="flex gap-4"><span>📱</span><div><p>Phone</p><p className="text-gray-500">+91 98765 43210</p></div></div>
-            <div className="flex gap-4"><span>📸</span><div><p>Instagram</p><p className="text-gray-500">@smartstudentlab</p></div></div>
+            <div className="flex gap-4"><span>📧</span><div><p>Email</p><p className="text-gray-500">studentstore142@gmail.com</p></div></div>
+            <div className="flex gap-4"><span>📱</span><div><p>Phone</p><p className="text-gray-500">-</p></div></div>
+            <div className="flex gap-4"><span>📸</span><div><p>Instagram</p><p className="text-gray-500">-</p></div></div>
             <div className="flex gap-4"><span>📍</span><div><p>Location</p><p className="text-gray-500">India</p></div></div>
           </div>
 

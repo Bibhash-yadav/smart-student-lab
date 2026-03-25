@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-  //  baseURL: "https://smart-student-lab.onrender.com",
+  // baseURL: "http://127.0.0.1:8000",
+   baseURL: "https://smart-student-lab.onrender.com",
 });
 
 // 🔥 ADD TOKEN AUTOMATICALLY

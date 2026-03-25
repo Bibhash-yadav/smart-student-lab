@@ -8,17 +8,17 @@ export default function AdminDashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
-  const [view, setView] = useState("tasks"); // 🔥 NEW (toggle)
+  const [view, setView] = useState("tasks");
   const navigate = useNavigate();
 
   const fetchTasks = async () => {
     const res = await API.get("/tasks/");
-    setTasks(res.data);
+    setTasks([...res.data].reverse()); // newest first
   };
 
   const fetchContacts = async () => {
     const res = await API.get("/contact/");
-    setContacts(res.data);
+    setContacts([...res.data].reverse());
   };
 
   useEffect(() => {
@@ -31,7 +31,6 @@ export default function AdminDashboard() {
     navigate("/login");
   };
 
-  // 🔥 FILTER
   const filteredTasks = tasks.filter((task) => {
     if (filter === "paid") return task.payment_status === "Verified";
     if (filter === "pending") return task.status === "Pending";
@@ -39,7 +38,6 @@ export default function AdminDashboard() {
     return true;
   });
 
-  // 🔥 ANALYTICS
   const total = tasks.length;
   const completed = tasks.filter(t => t.status === "Completed").length;
   const pending = tasks.filter(t => t.status === "Pending").length;
@@ -55,6 +53,8 @@ export default function AdminDashboard() {
     fetchTasks();
   };
 
+
+
   return (
     <div className="flex bg-gray-100 min-h-screen">
 
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
       <div className="w-full md:ml-64 p-4 md:p-6">
 
-        {/* 🔥 SWITCH BUTTON */}
+        {/* SWITCH */}
         <div className="flex gap-3 mb-6">
           <button
             onClick={() => setView("tasks")}
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* ================= TASK VIEW ================= */}
+        {/* TASK VIEW */}
         {view === "tasks" && (
           <>
             {/* STATS */}
@@ -97,43 +97,64 @@ export default function AdminDashboard() {
             {/* TASK LIST */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredTasks.map((task) => (
-                <div key={task.id} className="bg-white p-5 rounded-xl shadow">
+                <div
+                  key={task.id}
+                  className={`p-5 rounded-xl shadow ${
+                    task.status === "Completed"
+                      ? "bg-green-50 border border-green-400"
+                      : "bg-white"
+                  }`}
+                >
 
-                  <h2 className="font-bold">{task.service_type}</h2>
+                  {/* HEADER */}
+                  <div className="flex justify-between items-center">
+                    <h2 className="font-bold">{task.service_type}</h2>
+
+                    {/* STATUS BADGE */}
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      task.status === "Completed"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200"
+                    }`}>
+                      {task.status}
+                    </span>
+                  </div>
+
                   <p>{task.name}</p>
-
                   <p className="text-sm">📧 {task.email}</p>
                   <p className="text-sm">📱 {task.phone}</p>
 
                   <p className="text-sm mt-2">{task.description}</p>
 
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    <span className="px-2 py-1 bg-gray-200 rounded text-xs">{task.status}</span>
-                    <span className="px-2 py-1 bg-green-200 text-xs">{task.payment_status}</span>
-                  </div>
+                  {/* PAYMENT */}
+                  <span className="inline-block mt-2 px-2 py-1 bg-green-200 text-xs rounded">
+                    {task.payment_status}
+                  </span>
 
+                  {/* ACTIONS */}
                   <div className="mt-4 flex flex-col gap-2">
+
+                    {/* LEFT SIDE IMPORTANT BUTTON */}
                     <button
-                      onClick={() => verifyPayment(task.id)}
+                      onClick={() => updateStatus(task.id, "Completed")}
                       className="bg-green-600 text-white py-1 rounded"
                     >
-                      Verify Payment
+                      ✅ Mark Completed
                     </button>
 
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    <button
+                      onClick={() => verifyPayment(task.id)}
+                      className="bg-blue-600 text-white py-1 rounded"
+                    >
+                      💰 Verify Payment
+                    </button>
 
+                    <div className="flex flex-wrap gap-2 mt-2">
                       <button
                         onClick={() => updateStatus(task.id, "In Progress")}
-                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                        className="bg-yellow-500 text-white px-3 py-1 rounded"
                       >
                         🚀 Start
-                      </button>
-
-                      <button
-                        onClick={() => updateStatus(task.id, "Completed")}
-                        className="bg-purple-500 text-white px-3 py-1 rounded"
-                      >
-                        ✅ Complete
                       </button>
 
                       <button
@@ -143,7 +164,9 @@ export default function AdminDashboard() {
                         📦 Deliver
                       </button>
 
+                     
                     </div>
+
                   </div>
 
                 </div>
@@ -152,10 +175,9 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* ================= CONTACT VIEW ================= */}
+        {/* CONTACT VIEW */}
         {view === "contacts" && (
           <div className="grid gap-4">
-
             {contacts.length === 0 ? (
               <p className="text-gray-500 text-center mt-20">
                 No messages yet 👀
@@ -169,7 +191,6 @@ export default function AdminDashboard() {
                 </div>
               ))
             )}
-
           </div>
         )}
 

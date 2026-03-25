@@ -9,6 +9,7 @@ export default function SubmitTask() {
     email: "",
     phone: "",
     service_type: "",
+    custom_service: "", // 🔥 NEW FIELD
     description: "",
     deadline: "",
     priority: "Normal",
@@ -28,9 +29,9 @@ export default function SubmitTask() {
       !form.name ||
       !form.email ||
       !form.phone ||
-      !form.service_type ||
       !form.description ||
-      !form.deadline
+      !form.deadline ||
+      (!form.service_type && !form.custom_service)
     ) {
       alert("⚠️ Please fill all required fields");
       return;
@@ -38,9 +39,19 @@ export default function SubmitTask() {
 
     const data = new FormData();
 
+    // ✅ Use custom service if "Other" selected
+    const finalService =
+      form.service_type === "Other"
+        ? form.custom_service
+        : form.service_type;
+
     Object.keys(form).forEach((key) => {
-      data.append(key, form[key]);
+      if (key !== "custom_service") {
+        data.append(key, form[key]);
+      }
     });
+
+    data.append("service_type", finalService);
 
     if (file) {
       data.append("file", file);
@@ -64,6 +75,7 @@ export default function SubmitTask() {
         email: "",
         phone: "",
         service_type: "",
+        custom_service: "",
         description: "",
         deadline: "",
         priority: "Normal",
@@ -106,6 +118,7 @@ export default function SubmitTask() {
 
           {/* EMAIL */}
           <input
+            type="email"
             className="input"
             placeholder="📧 Email"
             value={form.email}
@@ -114,19 +127,38 @@ export default function SubmitTask() {
 
           {/* PHONE */}
           <input
+            type="tel"
             className="input"
             placeholder="📱 Phone"
             value={form.phone}
             onChange={(e) => handleChange("phone", e.target.value)}
           />
 
-          {/* SERVICE */}
-          <input
+          {/* SERVICE TYPE */}
+          <select
             className="input"
-            placeholder="📌 Service Type"
             value={form.service_type}
             onChange={(e) => handleChange("service_type", e.target.value)}
-          />
+          >
+            <option value="">📌 Select Service</option>
+            <option value="Electronic Projects">🔌 Electronic Projects</option>
+            <option value="Notes Writing">📝 Notes Writing</option>
+            <option value="Record Writing">📚 Record Writing</option>
+            <option value="PPT Creation">📊 PPT Creation</option>
+            <option value="Coding Projects">💻 Coding Projects</option>
+            <option value="Website Development">🌐 Website Development</option>
+            <option value="Other">✏️ Other</option>
+          </select>
+
+          {/* 🔥 SHOW INPUT IF OTHER SELECTED */}
+          {form.service_type === "Other" && (
+            <input
+              className="input"
+              placeholder="✏️ Enter your service"
+              value={form.custom_service}
+              onChange={(e) => handleChange("custom_service", e.target.value)}
+            />
+          )}
 
           {/* DESCRIPTION */}
           <textarea
@@ -138,9 +170,10 @@ export default function SubmitTask() {
 
           {/* DEADLINE */}
           <input
+            type="date"
             className="input"
-            placeholder="📅 Deadline"
             value={form.deadline}
+            min={new Date().toISOString().split("T")[0]}
             onChange={(e) => handleChange("deadline", e.target.value)}
           />
 
