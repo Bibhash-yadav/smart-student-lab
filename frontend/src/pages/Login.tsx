@@ -70,7 +70,7 @@
               <div className="text-4xl mb-2">🎓</div>
               <h2 className="text-2xl font-bold">Sign In</h2>
               <p className="text-gray-500 text-sm">
-                Welcome back to Smart Student Lab
+                Welcome back to Student Store
               </p>
             </div>
 

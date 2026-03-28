@@ -8,6 +8,7 @@ import SubmitTask from "./pages/SubmitTask";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminChat from "./pages/AdminChat";
 import Chat from "./pages/Chat";
+import MyTasks from "./pages/MyTasks";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/submit" element={<SubmitTask />} />
          <Route path="/admin/chat" element={<AdminChat />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/my-tasks" element={<MyTasks />} />
         <Route
           path="/admin"
           element={

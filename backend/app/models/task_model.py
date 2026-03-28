@@ -15,3 +15,4 @@ class Task(Base):
     priority = Column(String)
     status = Column(String, default="Pending")
     payment_status = Column(String, default="Pending")
+    admin_message = Column(String, default="")

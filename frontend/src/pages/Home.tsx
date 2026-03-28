@@ -1,18 +1,28 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ServiceCard from "../components/ServiceCard";
 import API from "../services/api";
-import { Link } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   const services = [
     { title: "Electronic Projects", desc: "Arduino, IoT systems", price: "₹500 – ₹2000" },
     { title: "Notes Writing", desc: "Handwritten / typed notes", price: "₹100 – ₹500" },
     { title: "Record Writing", desc: "Lab records & journals", price: "₹200 – ₹700" },
     { title: "PPT Creation", desc: "Professional presentations", price: "₹150 – ₹600" },
-    { title: "Coding Projects", desc: "Python, Java, C++", price: "₹300 – ₹1500" },
+    { title: "Coding Projects", desc: "Python, Java, C++, C", price: "₹300 – ₹1500" },
     { title: "Website Development", desc: "Full-stack apps", price: "₹500 – ₹3000" },
+  ];
+
+  // 🔥 FEATURES
+  const features = [
+    { text: "⚡ Fast Delivery", action: () => navigate("/submit") },
+    { text: "🔒 Secure Payment", action: () => navigate("/submit") },
+    { text: "📊 Track Progress", action: () => navigate("/my-tasks") },
+    { text: "✅ Quality Work", action: () => navigate("/submit") },
   ];
 
   // 🔥 CONTACT STATE
@@ -86,9 +96,13 @@ export default function Home() {
 
       {/* FEATURES */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6 -mt-16 mb-10">
-        {["⚡ Fast Delivery", "🔒 Secure Payment", "📊 Track Progress", "✅ Quality Work"].map((f, i) => (
-          <div key={i} className="bg-white p-4 rounded-xl shadow text-center">
-            {f}
+        {features.map((f, i) => (
+          <div
+            key={i}
+            onClick={f.action}
+            className="bg-white p-4 rounded-xl shadow text-center cursor-pointer hover:shadow-lg hover:-translate-y-1 transition"
+          >
+            {f.text}
           </div>
         ))}
       </div>
@@ -97,7 +111,7 @@ export default function Home() {
       <div id="services" className="px-6 py-20 bg-gradient-to-b from-white to-gray-50">
 
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-          🚀 Our Premium Services
+          🚀 Our Services
         </h2>
 
         <p className="text-center text-gray-500 mb-10">

@@ -68,7 +68,7 @@ export default function Navbar() {
           onClick={goHome}
           className="font-bold text-lg md:text-xl flex items-center gap-2 cursor-pointer"
         >
-          🎓 <span>Smart Student Lab</span>
+          🎓 <span>Student Store</span>
         </h1>
 
         {/* DESKTOP MENU */}

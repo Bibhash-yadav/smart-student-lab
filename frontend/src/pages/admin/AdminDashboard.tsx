@@ -7,13 +7,14 @@ import StatsCard from "../../components/StatsCard";
 export default function AdminDashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
+  const [messages, setMessages] = useState<{ [key: string]: string }>({}); // ✅ NEW
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("tasks");
   const navigate = useNavigate();
 
   const fetchTasks = async () => {
     const res = await API.get("/tasks/");
-    setTasks([...res.data].reverse()); // newest first
+    setTasks([...res.data].reverse());
   };
 
   const fetchContacts = async () => {
@@ -53,7 +54,13 @@ export default function AdminDashboard() {
     fetchTasks();
   };
 
-
+  // ✅ SEND MESSAGE FUNCTION
+  const sendMessage = async (id: string) => {
+    await API.put(`/tasks/${id}`, {
+      admin_message: messages[id]
+    });
+    fetchTasks();
+  };
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
@@ -110,7 +117,6 @@ export default function AdminDashboard() {
                   <div className="flex justify-between items-center">
                     <h2 className="font-bold">{task.service_type}</h2>
 
-                    {/* STATUS BADGE */}
                     <span className={`px-2 py-1 text-xs rounded ${
                       task.status === "Completed"
                         ? "bg-green-500 text-white"
@@ -131,10 +137,29 @@ export default function AdminDashboard() {
                     {task.payment_status}
                   </span>
 
+                  {/* 🔥 ADMIN MESSAGE INPUT */}
+                  <div className="mt-4 flex flex-col gap-2">
+                    <input
+                      type="text"
+                      placeholder="Type message for student..."
+                      className="border p-2 rounded"
+                      value={messages[task.id] || ""}
+                      onChange={(e) =>
+                        setMessages({ ...messages, [task.id]: e.target.value })
+                      }
+                    />
+
+                    <button
+                      onClick={() => sendMessage(task.id)}
+                      className="bg-purple-600 text-white py-1 rounded"
+                    >
+                      📩 Send Message
+                    </button>
+                  </div>
+
                   {/* ACTIONS */}
                   <div className="mt-4 flex flex-col gap-2">
 
-                    {/* LEFT SIDE IMPORTANT BUTTON */}
                     <button
                       onClick={() => updateStatus(task.id, "Completed")}
                       className="bg-green-600 text-white py-1 rounded"
@@ -163,8 +188,6 @@ export default function AdminDashboard() {
                       >
                         📦 Deliver
                       </button>
-
-                     
                     </div>
 
                   </div>

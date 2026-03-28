@@ -5,22 +5,23 @@ export default function ChatInput({ sendMessage }: any) {
 
   const handleSend = () => {
     if (!text.trim()) return;
+
     sendMessage(text);
     setText("");
   };
 
   return (
-    <div className="flex gap-2 p-3 border-t bg-white">
+    <div className="flex p-3 bg-white border-t">
       <input
+        className="flex-1 border rounded-lg px-3 py-2"
+        placeholder="Type message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Type message..."
-        className="flex-1 border rounded-lg px-3 py-2"
       />
 
       <button
         onClick={handleSend}
-        className="bg-green-500 text-white px-4 rounded-lg"
+        className="ml-2 bg-green-600 text-white px-4 rounded-lg"
       >
         Send
       </button>
