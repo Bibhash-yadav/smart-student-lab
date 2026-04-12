@@ -60,3 +60,5 @@ app.include_router(chat_routes.router)
 from app.routes import contact_routes
 
 app.include_router(contact_routes.router)
+
+print("🔥 Connected DB:", engine.url)

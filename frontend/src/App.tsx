@@ -9,6 +9,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminChat from "./pages/AdminChat";
 import Chat from "./pages/Chat";
 import MyTasks from "./pages/MyTasks";
+import Courses from "./pages/Courses"; // ✅ ADD THIS
+import Verify from "./pages/verify";
+
+
 
 export default function App() {
   return (
@@ -22,6 +26,8 @@ export default function App() {
          <Route path="/admin/chat" element={<AdminChat />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/my-tasks" element={<MyTasks />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/verify" element={<Verify />} />
         <Route
           path="/admin"
           element={

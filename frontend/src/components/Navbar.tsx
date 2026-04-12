@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Home, Layers, MessageCircle } from "lucide-react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8,7 +9,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔥 LOAD USER FROM LOCALSTORAGE
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -16,7 +16,6 @@ export default function Navbar() {
     }
   }, []);
 
-  // 🔥 GET FIRST LETTER (AVATAR)
   const getInitial = () => {
     if (!user) return "";
     return user.name
@@ -24,7 +23,6 @@ export default function Navbar() {
       : user.email?.charAt(0).toUpperCase();
   };
 
-  // 🔥 LOGOUT
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -32,13 +30,11 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  // 🔥 HOME
   const goHome = () => {
     if (location.pathname !== "/") navigate("/");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 🔥 SERVICES
   const goToServices = () => {
     if (location.pathname !== "/") {
       navigate("/");
@@ -54,13 +50,12 @@ export default function Navbar() {
     }
   };
 
-  // 🔥 CHAT
-  const goToChat = () => {
-    navigate("/chat");
-  };
+  const goToChat = () => navigate("/chat");
+  const goToCourses = () => navigate("/courses");
 
   return (
-    <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b shadow-sm">
+    <div className="sticky top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-[#0f172a]/90 via-[#1e1b4b]/90 to-[#06b6d4]/90 border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+
       <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
 
         {/* LOGO */}
@@ -68,40 +63,65 @@ export default function Navbar() {
           onClick={goHome}
           className="font-bold text-lg md:text-xl flex items-center gap-2 cursor-pointer"
         >
-          🎓 <span>Student Store</span>
+          🎓
+          <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 bg-clip-text text-transparent font-extrabold">
+            Student Store
+          </span>
         </h1>
 
         {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8 text-white">
 
-          <button onClick={goHome} className="hover:text-blue-600 transition">
+          <button
+            onClick={goHome}
+            className="flex items-center gap-2 hover:text-cyan-300 transition hover:scale-110"
+          >
+            <Home
+              size={20}
+              className="drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+            />
             Home
           </button>
 
-          <button onClick={goToServices} className="hover:text-blue-600 transition">
+          <button
+            onClick={goToServices}
+            className="flex items-center gap-2 hover:text-cyan-300 transition hover:scale-110"
+          >
+            <Layers
+              size={20}
+              className="drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+            />
             Services
           </button>
+          <button
+  onClick={goToCourses}
+  className="flex items-center gap-2 hover:text-cyan-300 transition hover:scale-110"
+>
+  📄 Courses
+</button>
 
           <button
             onClick={goToChat}
-            className="flex items-center gap-1 hover:text-green-600 transition"
+            className="flex items-center gap-2 hover:text-cyan-300 transition hover:scale-110"
           >
+            <MessageCircle
+              size={20}
+              className="drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+            />
             Chat
           </button>
 
-          {/* 🔥 USER OR LOGIN */}
           {user ? (
             <div className="flex items-center gap-3">
 
-              {/* AVATAR */}
-              <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+              {/* 3D AVATAR */}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 text-black flex items-center justify-center font-bold shadow-[0_0_20px_rgba(34,211,238,0.9)] hover:scale-110 transition">
                 {getInitial()}
               </div>
 
-              {/* LOGOUT */}
               <button
                 onClick={logout}
-                className="text-sm text-red-500 hover:underline"
+                className="text-sm text-red-400 hover:underline"
               >
                 Logout
               </button>
@@ -109,7 +129,7 @@ export default function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-5 py-2 rounded-xl font-semibold shadow-[0_0_15px_rgba(34,211,238,0.8)] hover:scale-105 transition"
             >
               Sign In
             </Link>
@@ -118,7 +138,7 @@ export default function Navbar() {
 
         {/* MOBILE MENU BUTTON */}
         <button
-          className="md:hidden text-2xl"
+          className="md:hidden text-white text-2xl"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           ☰
@@ -127,50 +147,27 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="md:hidden px-6 pb-4 flex flex-col gap-3 bg-white border-t">
+        <div className="md:hidden px-6 pb-4 flex flex-col gap-4 bg-black/90 backdrop-blur-xl border-t border-white/10 text-white">
 
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              goHome();
-            }}
-            className="text-left"
-          >
+          <button onClick={() => { setMenuOpen(false); goHome(); }}>
             Home
           </button>
 
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              goToServices();
-            }}
-            className="text-left"
-          >
+          <button onClick={() => { setMenuOpen(false); goToServices(); }}>
             Services
           </button>
 
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              goToChat();
-            }}
-            className="text-left"
-          >
+          <button onClick={() => { setMenuOpen(false); goToChat(); }}>
             Chat
           </button>
 
-          {/* 🔥 MOBILE USER */}
           {user ? (
             <div className="flex items-center gap-3 mt-2">
-
-              <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 text-black flex items-center justify-center font-bold">
                 {getInitial()}
               </div>
 
-              <button
-                onClick={logout}
-                className="text-red-500"
-              >
+              <button onClick={logout} className="text-red-400">
                 Logout
               </button>
             </div>
@@ -178,7 +175,7 @@ export default function Navbar() {
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-center"
+              className="bg-cyan-400 text-black px-4 py-2 rounded-xl text-center"
             >
               Sign In
             </Link>

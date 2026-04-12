@@ -23,45 +23,46 @@ export default function ServiceCard({ title, desc, price }: any) {
   const navigate = useNavigate();
 
   const handleOrder = () => {
-    // 🔥 Navigate with service data
     navigate("/submit", {
       state: { service: title }
     });
   };
 
   return (
-    <div className="group relative bg-white/80 backdrop-blur-xl border border-gray-200 p-6 rounded-2xl shadow-md hover:shadow-2xl transition duration-300 hover:-translate-y-2 overflow-hidden">
+    <div className="group relative bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.7)] transition duration-300 hover:-translate-y-3 hover:scale-[1.03] overflow-hidden text-white">
 
-      {/* 🔥 GLOW EFFECT */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300 bg-gradient-to-r from-blue-100 via-transparent to-blue-100 blur-xl"></div>
+      {/* 3D GLOW */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-cyan-400/20 via-transparent to-purple-400/20 blur-2xl"></div>
 
       {/* ICON */}
-      <div className="relative text-4xl mb-4 group-hover:scale-110 transition">
+      <div className="relative text-5xl mb-4 transform group-hover:scale-110 group-hover:rotate-3 transition duration-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]">
         {getIcon(title)}
       </div>
 
       {/* TITLE */}
-      <h2 className="relative text-lg font-semibold text-gray-800">
+      <h2 className="relative text-xl font-semibold text-cyan-300">
         {title}
       </h2>
 
       {/* DESCRIPTION */}
-      <p className="relative text-gray-500 mt-2 text-sm leading-relaxed">
+      <p className="relative text-gray-300 mt-2 text-sm leading-relaxed">
         {desc}
       </p>
 
       {/* FOOTER */}
       <div className="relative flex justify-between items-center mt-6">
-        <span className="font-bold text-blue-600 text-sm">
+
+        <span className="font-bold text-cyan-400 text-sm">
           {price}
         </span>
 
         <button
           onClick={handleOrder}
-          className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-md hover:shadow-lg active:scale-95"
+          className="px-4 py-2 text-sm rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-[0_0_15px_rgba(34,211,238,0.7)] hover:scale-105 transition active:scale-95"
         >
           Order 🚀
         </button>
+
       </div>
 
     </div>

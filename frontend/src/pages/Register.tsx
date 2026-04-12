@@ -12,6 +12,7 @@ export default function Register() {
 
   const [role, setRole] = useState("student");
   const [adminSecret, setAdminSecret] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -19,13 +20,11 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      // 🔥 VALIDATION
       if (!form.name || !form.email || !form.password) {
         alert("All fields are required ❌");
         return;
       }
 
-      // 🔥 ADMIN CHECK
       if (role === "admin") {
         if (!adminSecret || adminSecret !== ADMIN_SECRET) {
           alert("Invalid Admin Secret ❌");
@@ -33,31 +32,32 @@ export default function Register() {
         }
       }
 
-      // ✅ CORRECT PAYLOAD
+      setLoading(true);
+
       const payload = {
         name: form.name,
         email: form.email,
-        password: form.password, // ✅ FIXED
+        password: form.password,
         role: role,
-        adminSecret: adminSecret, // 🔥 send to backend
+        adminSecret: adminSecret,
       };
 
-      console.log("SENDING:", payload);
-
+      // 🔥 REGISTER API CALL
       const res = await API.post("/auth/register", payload);
 
-      console.log("RESPONSE:", res.data);
+      alert(res.data.message || "OTP sent to your email 📩");
 
-      alert("Account created successfully ✅");
-      navigate("/login");
+      // 👉 Redirect to verify page with email
+      navigate(`/verify?email=${form.email}`);
 
     } catch (err: any) {
-      console.log("REGISTER ERROR:", err.response?.data || err);
-
       alert(
-        err.response?.data?.detail ||
-        "Registration failed ❌"
-      );
+  err.response?.data?.detail || 
+  err.response?.data?.message || 
+  "Registration failed ❌"
+);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,21 +65,31 @@ export default function Register() {
     <>
       <Navbar />
 
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-        <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#06b6d4] relative overflow-hidden">
 
+        {/* GLOW BACKGROUND */}
+        <div className="absolute w-[400px] h-[400px] bg-cyan-400/30 blur-3xl rounded-full top-[-100px] left-[-100px] animate-pulse"></div>
+        <div className="absolute w-[400px] h-[400px] bg-purple-500/30 blur-3xl rounded-full bottom-[-100px] right-[-100px] animate-pulse"></div>
+
+        {/* CARD */}
+        <div className="relative w-full max-w-md p-8 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] text-white">
+
+          {/* HEADER */}
           <div className="text-center mb-6">
-            <div className="text-4xl mb-2">🎓</div>
+            <div className="text-4xl mb-2 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]">
+              🎓
+            </div>
             <h2 className="text-2xl font-bold">Create Account</h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-300 text-sm">
               Register to start submitting tasks
             </p>
           </div>
 
           {/* NAME */}
           <input
-            className="input"
-            placeholder="👤 Full Name"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400"
+            placeholder="Full Name"
+            type="text"
             value={form.name}
             onChange={(e) =>
               setForm({ ...form, name: e.target.value })
@@ -88,8 +98,9 @@ export default function Register() {
 
           {/* EMAIL */}
           <input
-            className="input"
-            placeholder="📧 Email"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400"
+            placeholder="Email"
+            type="email"
             value={form.email}
             onChange={(e) =>
               setForm({ ...form, email: e.target.value })
@@ -99,8 +110,8 @@ export default function Register() {
           {/* PASSWORD */}
           <input
             type="password"
-            className="input"
-            placeholder="🔒 Password"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400"
+            placeholder="Password"
             value={form.password}
             onChange={(e) =>
               setForm({ ...form, password: e.target.value })
@@ -108,13 +119,13 @@ export default function Register() {
           />
 
           {/* ROLE */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={() => setRole("student")}
-              className={`w-full py-2 rounded-lg ${
+              className={`w-full py-2 rounded-xl transition ${
                 role === "student"
-                  ? "bg-blue-700 text-white"
-                  : "bg-gray-200"
+                  ? "bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg"
+                  : "bg-white/20"
               }`}
             >
               Student
@@ -122,10 +133,10 @@ export default function Register() {
 
             <button
               onClick={() => setRole("admin")}
-              className={`w-full py-2 rounded-lg ${
+              className={`w-full py-2 rounded-xl transition ${
                 role === "admin"
-                  ? "bg-blue-700 text-white"
-                  : "bg-gray-200"
+                  ? "bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg"
+                  : "bg-white/20"
               }`}
             >
               Admin
@@ -136,8 +147,8 @@ export default function Register() {
           {role === "admin" && (
             <input
               type="password"
-              className="input mt-3"
-              placeholder="🔐 Admin Secret Key"
+              className="w-full p-3 rounded-xl mt-3 bg-white/20 outline-none text-white placeholder-gray-300 focus:ring-2 focus:ring-cyan-400"
+              placeholder="Admin Secret Key"
               value={adminSecret}
               onChange={(e) => setAdminSecret(e.target.value)}
             />
@@ -146,17 +157,18 @@ export default function Register() {
           {/* BUTTON */}
           <button
             onClick={handleRegister}
-            className="w-full bg-blue-800 text-white py-3 rounded-lg mt-4 hover:bg-blue-900"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black py-3 rounded-xl mt-5 font-semibold shadow-[0_0_20px_rgba(34,211,238,0.7)] hover:scale-105 transition disabled:opacity-50"
           >
-            Create Account
+            {loading ? "Creating..." : "Create Account 🚀"}
           </button>
 
           {/* LINK */}
-          <p className="text-center mt-4 text-sm">
+          <p className="text-center mt-4 text-sm text-gray-300">
             Already have an account?{" "}
             <span
               onClick={() => navigate("/login")}
-              className="text-blue-600 cursor-pointer"
+              className="text-cyan-300 cursor-pointer hover:underline"
             >
               Sign In
             </span>

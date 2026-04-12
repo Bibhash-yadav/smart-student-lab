@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Zap,
+  Shield,
+  CheckCircle,
+  BarChart3,
+} from "lucide-react";
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ServiceCard from "../components/ServiceCard";
@@ -14,25 +22,22 @@ export default function Home() {
     { title: "Record Writing", desc: "Lab records & journals", price: "₹200 – ₹700" },
     { title: "PPT Creation", desc: "Professional presentations", price: "₹150 – ₹600" },
     { title: "Coding Projects", desc: "Python, Java, C++, C", price: "₹300 – ₹1500" },
-    { title: "Website Development", desc: "Full-stack apps", price: "₹500 – ₹3000" },
+    { title: "Website Development", desc: "Full-stack Website", price: "₹500 – ₹3000" },
   ];
 
-  // 🔥 FEATURES
   const features = [
-    { text: "⚡ Fast Delivery", action: () => navigate("/submit") },
-    { text: "🔒 Secure Payment", action: () => navigate("/submit") },
-    { text: "📊 Track Progress", action: () => navigate("/my-tasks") },
-    { text: "✅ Quality Work", action: () => navigate("/submit") },
+    { text: "Fast Delivery", icon: <Zap size={30} />, action: () => navigate("/submit") },
+    { text: "Secure Payment", icon: <Shield size={30} />, action: () => navigate("/submit") },
+    { text: "Track Progress", icon: <BarChart3 size={30} />, action: () => navigate("/my-tasks") },
+    { text: "Quality Work", icon: <CheckCircle size={30} />, action: () => navigate("/submit") },
   ];
 
-  // 🔥 CONTACT STATE
   const [contact, setContact] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
   });
 
-  // 🔥 SEND CONTACT
   const sendContact = async () => {
     if (!contact.name || !contact.email || !contact.message) {
       alert("Please fill all fields ⚠️");
@@ -42,145 +47,167 @@ export default function Home() {
     try {
       await API.post("/contact/", contact);
       alert("Message sent successfully 🚀");
-
-      setContact({
-        name: "",
-        email: "",
-        message: ""
-      });
-
-    } catch (err) {
-      console.log(err);
-      alert("Failed to send message ❌");
+      setContact({ name: "", email: "", message: "" });
+    } catch {
+      alert("Failed ❌");
     }
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-screen flex flex-col text-white bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#06b6d4]">
+
       <Navbar />
 
       {/* HERO */}
-      <div className="min-h-screen flex flex-col justify-center items-center text-center px-4 bg-gradient-to-br from-blue-50 to-white">
-        <p className="bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm mb-4">
-          ⚡ Your academic task partner
-        </p>
+      <section className="w-full min-h-screen flex flex-col justify-center relative">
+        <div className="px-6 md:px-16 lg:px-24 text-center">
 
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-800">
-          Get Your Academic Tasks
-        </h1>
+         <div className="flex flex-col items-center gap-4 mb-10">
 
-        <h2 className="text-blue-600 text-4xl md:text-6xl font-bold mt-2">
-          Done Right
-        </h2>
-
-        <p className="mt-6 text-gray-500 max-w-xl">
-          Submit projects, notes, PPTs, coding assignments with fast delivery & secure payment.
-        </p>
-
-        <div className="mt-8 flex gap-4 flex-wrap justify-center">
-          <Link
-            to="/submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700"
-          >
-            Submit Task →
-          </Link>
-
-          <a
-            href="#services"
-            className="border px-6 py-3 rounded-lg hover:bg-gray-100"
-          >
-            View Services
-          </a>
-        </div>
+  {/* ICONS */}
+  <div className="flex justify-center gap-6">
+    {[Zap, Shield, BarChart3, CheckCircle].map((Icon, i) => (
+      <div
+        key={i}
+        className="p-5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 shadow-xl"
+      >
+        <Icon className="text-cyan-300" size={32} />
       </div>
+    ))}
+  </div>
+
+  {/* TEXT */}
+  <p className="text-cyan-300 text-lg md:text-xl font-semibold tracking-wide">
+    ⚡ Your academic task partner
+  </p>
+
+</div>
+
+          <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-7xl font-extrabold">
+            Get Your Academic Tasks
+          </motion.h1>
+
+    <h2 className="text-5xl md:text-7xl font-extrabold mt-4 mb-6 leading-tight md:leading-[1.3] bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+  Done Right
+</h2>
+
+          <p className="mt-6 text-gray-300 max-w-xl mx-auto text-lg">
+            Submit projects, notes, PPTs, coding assignments with fast delivery & secure payment..
+          </p>
+
+          <div className="mt-8 flex justify-center gap-4">
+            <Link to="/submit" className="bg-cyan-400 text-black px-6 py-3 rounded-xl font-semibold">
+              Submit Task 👉
+            </Link>
+            <a href="#services" className="border border-white px-6 py-3 rounded-xl">
+              Explore
+            </a>
+          </div>
+
+        </div>
+      </section>
 
       {/* FEATURES */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-6 -mt-16 mb-10">
-        {features.map((f, i) => (
-          <div
-            key={i}
-            onClick={f.action}
-            className="bg-white p-4 rounded-xl shadow text-center cursor-pointer hover:shadow-lg hover:-translate-y-1 transition"
-          >
-            {f.text}
-          </div>
-        ))}
-      </div>
+      <section className="w-full py-16">
+        <div className="px-6 md:px-16 lg:px-24 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+          {features.map((f, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              onClick={f.action}
+              className="bg-white/10 p-6 rounded-xl text-center cursor-pointer"
+            >
+              <div className="mb-4 flex justify-center text-cyan-300">{f.icon}</div>
+              <p className="font-semibold">{f.text}</p>
+            </motion.div>
+          ))}
+
+        </div>
+      </section>
 
       {/* SERVICES */}
-      <div id="services" className="px-6 py-20 bg-gradient-to-b from-white to-gray-50">
+      <section id="services" className="w-full py-20">
+        <div className="px-6 md:px-16 lg:px-24">
 
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-          🚀 Our Services
-        </h2>
+          <h2 className="text-4xl font-bold text-center mb-4">Our Services</h2>
+          <p className="text-center text-gray-300 mb-12">Premium academic solutions</p>
 
-        <p className="text-center text-gray-500 mb-10">
-          Choose from high-quality academic & technical solutions
-        </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+            {services.map((s, i) => (
+              <motion.div key={i} whileHover={{ scale: 1.05 }}>
+                <ServiceCard {...s} />
+              </motion.div>
+            ))}
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {services.map((s, i) => (
-            <ServiceCard key={i} {...s} />
-          ))}
         </div>
-      </div>
+      </section>
 
       {/* CONTACT */}
-      <div className="px-6 py-20 bg-gradient-to-br from-blue-50 to-white">
+      <section className="w-full py-24 relative">
+        <div className="px-6 md:px-16 lg:px-24">
 
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-          📞 Contact Us
-        </h2>
+          <h2 className="text-4xl font-bold text-center mb-4">
+           📞 Contact Us
+          </h2>
+<h2 className="text-2xl  text-center mb-12">
+           Have questions? We’re always here to help 💬
+          </h2>
+          <div className="grid md:grid-cols-2 gap-10">
 
-        <p className="text-center text-gray-500 mb-12">
-          Have questions? We’re always here to help 💬
-        </p>
+            {/* LEFT */}
+            <div className="p-8 rounded-2xl bg-white/10">
+              <h3 className="text-2xl font-bold mb-4">Get in Touch</h3>
+              <p className="text-gray-300 mb-6">Let’s build something amazing 🚀</p>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+              <div className="space-y-4">
+                <div className="p-4 bg-white/10 rounded-xl">📧 studentstore142@gmail.com</div>
+                <div className="p-4 bg-white/10 rounded-xl">📱 +91 XXXXXXXX</div>
+                <div className="p-4 bg-white/10 rounded-xl">📍 India</div>
+              </div>
+            </div>
 
-          {/* LEFT */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg space-y-6">
-            <div className="flex gap-4"><span>📧</span><div><p>Email</p><p className="text-gray-500">studentstore142@gmail.com</p></div></div>
-            <div className="flex gap-4"><span>📱</span><div><p>Phone</p><p className="text-gray-500">-</p></div></div>
-            <div className="flex gap-4"><span>📸</span><div><p>Instagram</p><p className="text-gray-500">-</p></div></div>
-            <div className="flex gap-4"><span>📍</span><div><p>Location</p><p className="text-gray-500">India</p></div></div>
-          </div>
+            {/* RIGHT */}
+            <div className="p-8 rounded-2xl bg-white/10">
 
-          {/* FORM */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg">
-            <h3 className="text-xl font-semibold mb-4">✉️ Send Message</h3>
+              <h3 className="text-2xl font-bold mb-6">Send Message</h3>
 
-            <input
-              value={contact.name}
-              onChange={(e) => setContact({ ...contact, name: e.target.value })}
-              className="input"
-              placeholder="👤 Your Name"
-            />
+              <input
+                value={contact.name}
+                onChange={(e) => setContact({ ...contact, name: e.target.value })}
+                className="w-full p-3 rounded-xl mb-4 bg-white/20"
+                placeholder="Your Name"
+              />
 
-            <input
-              value={contact.email}
-              onChange={(e) => setContact({ ...contact, email: e.target.value })}
-              className="input"
-              placeholder="📧 Your Email"
-            />
+              <input
+                value={contact.email}
+                onChange={(e) => setContact({ ...contact, email: e.target.value })}
+                className="w-full p-3 rounded-xl mb-4 bg-white/20"
+                placeholder="Your Email"
+              />
 
-            <textarea
-              value={contact.message}
-              onChange={(e) => setContact({ ...contact, message: e.target.value })}
-              className="input"
-              placeholder="💬 Your Message"
-            />
+              <textarea
+                value={contact.message}
+                onChange={(e) => setContact({ ...contact, message: e.target.value })}
+                className="w-full p-3 rounded-xl mb-4 bg-white/20"
+                rows={5}
+                placeholder="Your Message"
+              />
 
-            <button
-              onClick={sendContact}
-              className="w-full bg-blue-600 text-white py-3 mt-4 rounded-xl hover:bg-blue-700"
-            >
-              Send Message 🚀
-            </button>
+              <button
+                onClick={sendContact}
+                className="w-full py-3 rounded-xl bg-cyan-400 text-black font-semibold"
+              >
+                Send Message 🚀
+              </button>
+
+            </div>
+
           </div>
 
         </div>
-      </div>
+      </section>
 
       <Footer />
     </div>

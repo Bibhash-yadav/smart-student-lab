@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -9,7 +10,7 @@ export default function SubmitTask() {
     email: "",
     phone: "",
     service_type: "",
-    custom_service: "", // 🔥 NEW FIELD
+    custom_service: "",
     description: "",
     deadline: "",
     priority: "Normal",
@@ -19,12 +20,27 @@ export default function SubmitTask() {
   const [file, setFile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
+  // 🔥 LOGIN CHECK + START FROM TOP
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("⚠️ Please login first");
+      navigate("/login");
+      return;
+    }
+
+    // ✅ force scroll to top
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleChange = (key: string, value: any) => {
     setForm({ ...form, [key]: value });
   };
 
   const submit = async () => {
-    // 🔥 VALIDATION
     if (
       !form.name ||
       !form.email ||
@@ -39,7 +55,6 @@ export default function SubmitTask() {
 
     const data = new FormData();
 
-    // ✅ Use custom service if "Other" selected
     const finalService =
       form.service_type === "Other"
         ? form.custom_service
@@ -60,16 +75,14 @@ export default function SubmitTask() {
     try {
       setLoading(true);
 
-      const res = await API.post("/tasks/", data, {
+      await API.post("/tasks/", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("SUCCESS:", res.data);
       alert("✅ Task Submitted Successfully 🚀");
 
-      // 🔄 RESET FORM
       setForm({
         name: "",
         email: "",
@@ -84,131 +97,135 @@ export default function SubmitTask() {
 
       setFile(null);
 
-    } catch (err: any) {
-      console.log("FULL ERROR:", err);
-      console.log("BACKEND ERROR:", err.response?.data);
+      // 🔥 go top after submit
+      window.scrollTo(0, 0);
 
-      alert(
-        err.response?.data?.detail ||
-        "❌ Error submitting task"
-      );
+    } catch (err: any) {
+      alert(err.response?.data?.detail || "❌ Error submitting task");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#06b6d4] text-white">
+
       <Navbar />
 
-      <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4 py-10">
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl">
+      {/* MAIN */}
+      <div className="flex-grow flex justify-center items-center px-4 py-10 relative overflow-hidden">
 
-          <h1 className="text-2xl font-bold text-center mb-6">
-            🚀 Submit Your Task
+        {/* GLOW */}
+        <div className="absolute w-[500px] h-[500px] bg-cyan-400/20 blur-3xl rounded-full top-[-120px] left-[-120px]"></div>
+        <div className="absolute w-[500px] h-[500px] bg-purple-500/20 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
+
+        {/* CARD */}
+        <div className="relative w-full max-w-2xl p-8 rounded-3xl backdrop-blur-xl bg-white/10 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+
+          <h1 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+            Submit Your Task 
           </h1>
 
-          {/* NAME */}
           <input
-            className="input"
-            placeholder="👤 Name"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
+            placeholder="Name"
             value={form.name}
             onChange={(e) => handleChange("name", e.target.value)}
           />
 
-          {/* EMAIL */}
           <input
             type="email"
-            className="input"
-            placeholder="📧 Email"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
+            placeholder="Email"
             value={form.email}
             onChange={(e) => handleChange("email", e.target.value)}
           />
 
-          {/* PHONE */}
           <input
             type="tel"
-            className="input"
-            placeholder="📱 Phone"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
+            placeholder="Phone"
             value={form.phone}
             onChange={(e) => handleChange("phone", e.target.value)}
           />
 
-          {/* SERVICE TYPE */}
           <select
-            className="input"
+            className="w-full p-3 rounded-xl mb-3 bg-white/10 border border-white/20 text-white outline-none"
             value={form.service_type}
             onChange={(e) => handleChange("service_type", e.target.value)}
           >
-            <option value="">📌 Select Service</option>
-            <option value="Electronic Projects">🔌 Electronic Projects</option>
-            <option value="Notes Writing">📝 Notes Writing</option>
-            <option value="Record Writing">📚 Record Writing</option>
-            <option value="PPT Creation">📊 PPT Creation</option>
-            <option value="Coding Projects">💻 Coding Projects</option>
-            <option value="Website Development">🌐 Website Development</option>
-            <option value="Other">✏️ Other</option>
+            <option className="bg-[#0f172a]" value="">Select Service</option>
+            <option className="bg-[#0f172a]">Electronic Projects</option>
+            <option className="bg-[#0f172a]">Notes Writing</option>
+            <option className="bg-[#0f172a]">Record Writing</option>
+            <option className="bg-[#0f172a]">PPT Creation</option>
+            <option className="bg-[#0f172a]">Coding Projects</option>
+            <option className="bg-[#0f172a]">Website Development</option>
+            <option className="bg-[#0f172a]">Other</option>
           </select>
 
-          {/* 🔥 SHOW INPUT IF OTHER SELECTED */}
           {form.service_type === "Other" && (
             <input
-              className="input"
-              placeholder="✏️ Enter your service"
+              className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
+              placeholder="Enter your service"
               value={form.custom_service}
-              onChange={(e) => handleChange("custom_service", e.target.value)}
+              onChange={(e) =>
+                handleChange("custom_service", e.target.value)
+              }
             />
           )}
 
-          {/* DESCRIPTION */}
           <textarea
-            className="input"
-            placeholder="📝 Description"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
+            placeholder="Description"
             value={form.description}
-            onChange={(e) => handleChange("description", e.target.value)}
+            onChange={(e) =>
+              handleChange("description", e.target.value)
+            }
           />
 
-          {/* DEADLINE */}
           <input
             type="date"
-            className="input"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
             value={form.deadline}
             min={new Date().toISOString().split("T")[0]}
-            onChange={(e) => handleChange("deadline", e.target.value)}
+            onChange={(e) =>
+              handleChange("deadline", e.target.value)
+            }
           />
 
-          {/* PRIORITY */}
           <select
-            className="input"
+            className="w-full p-3 rounded-xl mb-3 bg-white/10 border border-white/20 text-white outline-none"
             value={form.priority}
-            onChange={(e) => handleChange("priority", e.target.value)}
+            onChange={(e) =>
+              handleChange("priority", e.target.value)
+            }
           >
-            <option value="Normal">Normal</option>
-            <option value="Urgent">Urgent ⚡</option>
+            <option className="bg-[#0f172a]">Normal</option>
+            <option className="bg-[#0f172a]">Urgent</option>
           </select>
 
-          {/* PAYMENT */}
           <select
-            className="input"
+            className="w-full p-3 rounded-xl mb-3 bg-white/20 outline-none"
             value={form.payment_method}
-            onChange={(e) => handleChange("payment_method", e.target.value)}
+            onChange={(e) =>
+              handleChange("payment_method", e.target.value)
+            }
           >
-            <option value="UPI">UPI</option>
-            <option value="COD">Cash on Delivery</option>
+            <option>UPI</option>
+            <option>COD</option>
           </select>
 
-          {/* FILE */}
           <input
             type="file"
             className="mt-3"
             onChange={(e) => setFile(e.target.files?.[0])}
           />
 
-          {/* SUBMIT */}
           <button
             onClick={submit}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 mt-5 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
+            className="w-full mt-5 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition"
           >
             {loading ? "Submitting..." : "Submit Task 🚀"}
           </button>
@@ -217,6 +234,6 @@ export default function SubmitTask() {
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 }
